@@ -8,17 +8,17 @@ The NavBarBundle allow to create a navbar from navbar.yml files placed into the 
 Register the bundle into app/appKernel.php
 
 ```
-** *app/AppKernel.php* **
+// app/AppKernel.php
 class AppKernel extends Kernel
 {
     public function registerBundles()
     {
         $bundles = array(
-            *[...]*
+            [...]
             new Cscfa\Bundle\NavBarBundle\CscfaNavBarBundle(),
         );
         
-        *[...]*
+        [...]
     }
 }
 ```
