@@ -5,6 +5,7 @@ The NavBarBundle allow to create a navbar from navbar.yml files placed into the 
 
 #####The navbar.yml file construction
 
+```
 navbar:
 	name:
 		label: ""
@@ -13,6 +14,7 @@ navbar:
 		path: {route: "", param: {}}
 		url: ""
 		options: mixed
+```
 
 The 'navbar' element is the root element.
 
