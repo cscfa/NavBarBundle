@@ -68,6 +68,8 @@ class NavBarExtension extends \Twig_Extension
      */
     protected $loader;
     
+    protected $template;
+    
     /**
      * Constructor
      * 
@@ -77,8 +79,14 @@ class NavBarExtension extends \Twig_Extension
      * @param SecurityContext $context - the security context service
      * @param Router          $router  - the application router service
      */
-    public function setArguments(NavBarLoader $loader, SecurityContext $context, Router $router)
+    public function setArguments(NavBarLoader $loader, SecurityContext $context, Router $router, $template = null)
     {
+        if ($template !== null) {
+            $this->template = $template;
+        } else {
+            $this->template = self::DEFAULT_TEMPLATE;
+        }
+        
         $this->router = $router;
         $this->loader = $loader;
         
@@ -138,7 +146,7 @@ class NavBarExtension extends \Twig_Extension
         
         $navbar->setElements($elements);
         
-        return $twig->render(self::DEFAULT_TEMPLATE, array("navbar"=>$navbar->getHead()));
+        return $twig->render($this->template, array("navbar"=>$navbar->getHead()));
     }
     
     /**

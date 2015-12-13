@@ -40,6 +40,13 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
+
+        $rootNode = $treeBuilder->root('cscfa_nav_bar');
+    
+        $rootNode
+                ->children()
+                ->scalarNode('template')->defaultNull()->end()
+                ->end();
         
         return $treeBuilder;
     }

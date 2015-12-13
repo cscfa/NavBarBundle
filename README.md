@@ -1,5 +1,5 @@
 # NavBarBundle
-### Version: 1.0.0-dev
+### Version: 1.0.1-dev
 
 The NavBarBundle allow to create a navbar from navbar.yml files placed into the Resources/config directory.
 
@@ -32,6 +32,11 @@ The 'options' element is used to send options to the render template. It's an op
 
 #####The template
 
-The more usable method to render a navbar is actually to override the CscfaNavBarBundle:navbar:navbar.hmlt.twig
+Use twig function '{{ renderNavbar() }}' to display the navbar.
 
-The template receive a 'NavBar' object as 'navbar' variable.
+To use personnal template, use the app/config/config.yml with the following parameters: 
+
+```
+cscfa_nav_bar:
+    template: "bundleName:directory:template.html.twig"
+```
