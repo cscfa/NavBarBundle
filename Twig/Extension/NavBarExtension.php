@@ -172,6 +172,8 @@ class NavBarExtension extends \Twig_Extension
      * view that contain the
      * html navbar
      * 
+     * @param \Twig_Environment $twig - the current twig environment
+     * 
      * @return string - The rendered template
      */
     public function renderNavbar(\Twig_Environment $twig){
@@ -195,7 +197,21 @@ class NavBarExtension extends \Twig_Extension
         
         return $twig->render($this->template, array("navbar"=>$navbar->getHead()));
     }
-    
+
+
+    /**
+     * Render child
+     *
+     * Return a rendered twig
+     * view that contain the
+     * html elements
+     *
+     * @param \Twig_Environment $twig        - the current twig environment
+     * @param NavBarElement     $child       - the element to render
+     * @param integer           $nestedLevel - the element nesting level
+     * 
+     * @return string - The rendered template
+     */
     public function renderChild(\Twig_Environment $twig, NavBarElement $child, $nestedLevel){
         return $twig->render($this->childTemplate, array("element"=>$child, "nestedLevel"=>($nestedLevel + 1)));
     }
