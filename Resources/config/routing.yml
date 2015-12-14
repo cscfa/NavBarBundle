@@ -1,3 +1,0 @@
-cscfa_nav_bar_test:
-    path:     /test/navbar
-    defaults: { _controller: "CscfaNavBarBundle:Navbar:test" }
