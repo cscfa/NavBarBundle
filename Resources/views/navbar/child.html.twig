@@ -1,0 +1,10 @@
+<li class="navbar-nesting-{{ nestedLevel }}">
+    <a href="{{ element.getPath() }}">{{ element.getName() }}</a>
+    {% if element.getChild() %}
+        <ul>
+        {% for child in element.getChild() %}
+            {{ child|navbarChild(nestedLevel) }}
+        {% endfor %}
+        </ul>
+    {% endif %}
+</li>

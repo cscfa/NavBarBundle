@@ -1,0 +1,12 @@
+services:
+    cscfa_nav_bar.navbar.loader:
+        class: Cscfa\Bundle\NavBarBundle\Objects\NavBarLoader
+        calls: 
+            - [setArguments, [ "@kernel", "@logger" ]]
+    cscfa_nav_bar.navbar.extension:
+        class: Cscfa\Bundle\NavBarBundle\Twig\Extension\NavBarExtension
+        calls: 
+            - [setArguments, [ "@cscfa_nav_bar.navbar.loader", "@security.context", "@router", "%cscfa_nav_bar%" ]]
+        public: false
+        tags:
+            - { name: twig.extension }
