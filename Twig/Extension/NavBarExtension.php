@@ -101,7 +101,7 @@ class NavBarExtension extends \Twig_Extension
     {
         $template = $config['template'];
         $childTemplate = $config['child_template'];
-        
+            
         if ($template !== null) {
             $this->template = $template;
         } else {
