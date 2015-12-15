@@ -1,5 +1,5 @@
 # NavBarBundle
-### Version: 1.0.2-dev
+### Version: 1.0.3-dev
 
 The NavBarBundle allow to create a navbar from navbar.yml files placed into the Resources/config directory.
 
@@ -24,6 +24,16 @@ class AppKernel extends Kernel
 ```
 
 #####The navbar.yml file construction
+
+The default place of the 'navbar.yml' file is into 'Resources/config' directory. It's possible to change this place by using the following configuration : 
+
+```
+cscfa_nav_bar:
+    files_path: "path"
+```
+_note the given path must start with '/' and contain the complete file name. (example with the default configuration : '/Resources/config/navbar.yml')_
+
+######The file format is :
 
 ```
 navbar:

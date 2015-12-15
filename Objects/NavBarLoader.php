@@ -72,6 +72,18 @@ class NavBarLoader
     protected $logger;
     
     /**
+     * Base path
+     * 
+     * The base path whence
+     * fing the definitions
+     * files of the navbar
+     * in each bundles
+     * 
+     * @var string
+     */
+    protected $basePath;
+    
+    /**
      * Set arguments
      * 
      * Initialize the service
@@ -79,10 +91,17 @@ class NavBarLoader
      * 
      * @param KernelInterface $kernel - the application kernel
      * @param Logger          $logger - the application logger
+     * @param array           $config - the bundle configuration
      */
-    public function setArguments(KernelInterface $kernel, Logger $logger){
+    public function setArguments(KernelInterface $kernel, Logger $logger, $config){
         $this->logger = $logger;
         $this->bundles = new BundleCollection();
+        
+        if ($config['files_path'] !== null) {
+            $this->basePath = $config['files_path'];
+        } else {
+            $this->basePath = self::BUNDLE_PATH;
+        }
 
         $this->storeBundles($kernel);
     }
@@ -102,7 +121,7 @@ class NavBarLoader
     protected function storeBundles(KernelInterface $kernel){
         foreach ($kernel->getBundles() as $bundle) {
             if ($bundle instanceof Bundle) {
-                $file = $bundle->getPath().self::BUNDLE_PATH;
+                $file = $bundle->getPath().$this->basePath;
                 if (is_file($file) && is_readable($file)) {
                     $this->bundles->add($bundle);
                 } else if(is_file($file) && !is_readable($file)) {
@@ -134,7 +153,7 @@ class NavBarLoader
         foreach ($bundlesNames as $name) {
             $bundle = $this->bundles->get($name);
             
-            $configFilePath = $bundle->getPath().self::BUNDLE_PATH;
+            $configFilePath = $bundle->getPath().$this->basePath;
             $yaml = new Parser();
             
             $navbarConfig = $yaml->parse(file_get_contents($configFilePath));
