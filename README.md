@@ -1,5 +1,5 @@
 # NavBarBundle
-### Version: 1.0.3-dev
+### Version: 1.0.4-dev
 
 The NavBarBundle allow to create a navbar from navbar.yml files placed into the Resources/config directory.
 
@@ -44,6 +44,7 @@ navbar:
 		path: {route: "", param: {}}
 		url: ""
 		options: mixed
+		position: integer
 ```
 
 The 'navbar' element is the root element.
@@ -59,6 +60,9 @@ The 'parent' element is used to define the parent element of the current for the
 The 'path' and 'url' elements are used to define the navbar element destination. The 'path' element is a generated application route with 'route' as route name and 'param' as route parameters. It's an optional element.
 
 The 'options' element is used to send options to the render template. It's an optional element.
+
+The 'position' element is used to set the position of the element into the navbar. It order the heads elements instead of childs inside their parents.
+_note the default position can be set by the 'default_position' parameter of the configuration._
 
 #####The template
 

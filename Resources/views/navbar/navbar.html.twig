@@ -1,5 +1,5 @@
 <ul>
-{% for element in navbar.getElements() %}
+{% for element in navbar.getOrderedElements() %}
     {{ element|navbarChild(0) }}
 {% endfor %}
 </ul>

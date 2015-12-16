@@ -45,6 +45,28 @@ class NavBar
     protected $elements;
 
     /**
+     * Ordered elements
+     * 
+     * This variable contain
+     * the navbar elements
+     * ordered by position
+     * 
+     * @var array
+     */
+    protected $orderedElements;
+    
+    /**
+     * Default position
+     * 
+     * This variable indicate
+     * the default position
+     * of the element
+     * 
+     * @var integer
+     */
+    protected $defaultPosition;
+
+    /**
      * Constructor
      * 
      * Default constructor
@@ -80,6 +102,64 @@ class NavBar
         $this->elements = $elements;
         return $this;
     }
+
+    /**
+     * Get ordered elements
+     * 
+     * Return the navbar elements
+     * ordered by their positions
+     * 
+     * @return array
+     */
+    public function getOrderedElements()
+    {
+        return $this->orderedElements;
+    }
+
+    /**
+     * Set ordered elements
+     * 
+     * Set the navbar elements
+     * ordered by their positions
+     * 
+     * @param array $orderedElements - the navbar ordered elements
+     * 
+     * @return NavBar - the current instance
+     */
+    public function setOrderedElements(array $orderedElements)
+    {
+        $this->orderedElements = $orderedElements;
+        return $this;
+    }
+
+    /**
+     * Get default position
+     * 
+     * Return the navbar elements
+     * default position
+     * 
+     * @return integer
+     */
+    public function getDefaultPosition()
+    {
+        return $this->defaultPosition;
+    }
+
+    /**
+     * Set default position
+     * 
+     * Set the navbar elements
+     * default position
+     * 
+     * @param integer $defaultPosition - the navbar default position
+     * 
+     * @return NavBar - the current instance
+     */
+    public function setDefaultPosition($defaultPosition)
+    {
+        $this->defaultPosition = $defaultPosition;
+        return $this;
+    }
  
     /**
      * Get head
@@ -89,14 +169,15 @@ class NavBar
      * 
      * @return array
      */
-    public function getHead(){
+    public function getHead()
+    {
         $elements = array();
         
         foreach ($this->elements as $element) {
             $elements[$element->getName()] = $element;
         }
         
-        foreach ($this->elements as $element){
+        foreach ($this->elements as $element) {
             if (is_array($element->getChild())) {
                 foreach ($element->getChild() as $child) {
                     if ($child instanceof NavBarElement) {
@@ -108,23 +189,75 @@ class NavBar
             }
         }
         
-        return (new NavBar())->setElements($elements);
+        $resultNavBar = new NavBar();
+        $resultNavBar->setElements($elements);
+        $resultNavBar->setOrderedElements($this->orderElements($elements));
+        
+        return $resultNavBar;
     }
     
+    /**
+     * Order elements
+     * 
+     * Order the navbar
+     * elements by their
+     * position
+     * 
+     * @param unknown $elements
+     * @return multitype:\Cscfa\Bundle\NavBarBundle\Objects\NavBarElement 
+     */
+    protected function orderElements($elements){
+        $order = array();
+        $result = array();
+        
+        foreach ($elements as $element) {
+            if($element instanceof NavBarElement){
+                if($element->getPosition() !== null){
+                    $position = $element->getPosition();
+                }else{
+                    $position = $this->defaultPosition;
+                }
+                
+                if (!isset($order[$position])) {
+                    $order[$position] = array();
+                }
+                
+                if ($element->getChild() !== null) {
+                    $element->setChild($this->orderElements($element->getChild()));
+                }
+                
+                $order[$position][] = $element;
+            }
+        }
+        //sort array by keys
+        ksort($order);
+        
+        foreach ($order as $orderedElements) {
+            foreach ($orderedElements as $element) {
+                $result[] = $element;
+            }
+        }
+        
+        return $result;
+    }
+
     /**
      * Parse array
      * 
      * Parse an array given by
      * a yaml parser
      * 
-     * @param array  $navbar - the navbar array rendered by yaml parser
-     * @param router $router - the application router
+     * @param array   $navbar          - the navbar array rendered by yaml parser
+     * @param router  $router          - the application router
+     * @param integer $defaultPosition - the default navbar element position
      * 
      * @throws \Exception
      * @return NavBar - the current instance
      */
-    public function parseArray($navbar, Router $router)
+    public function parseArray($navbar, Router $router, $defaultPosition)
     {
+        $this->defaultPosition = $defaultPosition;
+        
         foreach ($navbar as $navbarName => $navbarConfig) {
             if (! array_key_exists($navbarName, $this->elements)) {
                 $this->elements[$navbarName] = $this->createElement($navbarName, $navbarConfig, $router);
@@ -184,14 +317,17 @@ class NavBar
             case 'options':
                 $element->setOptions($value);
                 break;
+            case 'position':
+                $element->setPosition($value);
+                break;
             default:
-                throw new \Exception(sprintf("The '%s' key for navbar element does not exist. Allowed : 'label', 'roles', 'path', 'parent', 'url', 'options'", $value), 500);
+                throw new \Exception(sprintf("The '%s' key for navbar element does not exist. Allowed : 'label', 'roles', 'path', 'parent', 'url', 'options', 'position'", $value), 500);
             }
         }
         
         return $element;
     }
-    
+
     /**
      * Generate route
      * 
@@ -203,8 +339,8 @@ class NavBar
      * @param Router $router - the application router
      * @throws \Exception
      */
-    protected function generateRoute($name, $value, Router $router){
-        
+    protected function generateRoute($name, $value, Router $router)
+    {
         if (array_key_exists("route", $value)) {
             $route = $value['route'];
         } else {

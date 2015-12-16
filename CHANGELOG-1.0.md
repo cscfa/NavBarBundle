@@ -1,6 +1,9 @@
 #CHANGELOG for 1.0.*
 #===================
 
+### 1.0.4 (2015-12-16)
+ * introduce element position
+
 ### 1.0.3 (2015-12-15)
  * introduce file path configuration
 

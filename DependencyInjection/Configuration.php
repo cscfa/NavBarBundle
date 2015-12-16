@@ -52,6 +52,9 @@ class Configuration implements ConfigurationInterface
                 ->end()
                 ->children()
                 ->scalarNode('files_path')->defaultNull()->end()
+                ->end()
+                ->children()
+                ->scalarNode('default_position')->defaultNull()->end()
                 ->end();
         
         return $treeBuilder;

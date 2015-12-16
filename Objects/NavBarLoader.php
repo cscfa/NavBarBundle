@@ -51,6 +51,16 @@ class NavBarLoader
     const BUNDLE_PATH = "/Resources/config/navbar.yml";
     
     /**
+     * DEFAULT_POSITION
+     * 
+     * The default position
+     * of the navbar elements
+     * 
+     * @var integer
+     */
+    const DEFAULT_POSITION = 1;
+    
+    /**
      * Bundles
      * 
      * A set of bundles that
@@ -84,6 +94,16 @@ class NavBarLoader
     protected $basePath;
     
     /**
+     * Default position
+     * 
+     * The default position
+     * of the navbar element
+     * 
+     * @var integer
+     */
+    protected $defaultPosition;
+    
+    /**
      * Set arguments
      * 
      * Initialize the service
@@ -101,6 +121,12 @@ class NavBarLoader
             $this->basePath = $config['files_path'];
         } else {
             $this->basePath = self::BUNDLE_PATH;
+        }
+        
+        if ($config['default_position'] !== null) {
+            $this->defaultPosition = $config['default_position'];
+        } else {
+            $this->defaultPosition = self::DEFAULT_POSITION;
         }
 
         $this->storeBundles($kernel);
@@ -161,7 +187,7 @@ class NavBarLoader
         }
         
         $navBar = new NavBar();
-        $navBar->parseArray($config, $router);
+        $navBar->parseArray($config, $router, $this->defaultPosition);
         return $navBar;
     }
     

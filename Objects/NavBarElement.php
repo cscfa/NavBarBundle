@@ -82,6 +82,15 @@ class NavBarElement
     protected $options;
 
     /**
+     * Position
+     * 
+     * The element position
+     * 
+     * @var integer
+     */
+    protected $position;
+    
+    /**
      * Get name
      * 
      * Return the element
@@ -266,4 +275,34 @@ class NavBarElement
         $this->options = $options;
         return $this;
     }
+
+    /**
+     * Get position
+     * 
+     * Return the element
+     * position
+     * 
+     * @return integer
+     */
+    public function getPosition()
+    {
+        return $this->position;
+    }
+
+    /**
+     * Set position
+     * 
+     * Set the element
+     * position
+     * 
+     * @param integer $position - the element position
+     * 
+     * @return NavBarElement - the current instance
+     */
+    public function setPosition($position)
+    {
+        $this->position = $position;
+        return $this;
+    }
+ 
 }
