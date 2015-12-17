@@ -23,6 +23,7 @@ use Cscfa\Bundle\NavBarBundle\Objects\BundleCollection;
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
+use Cscfa\Bundle\CacheSystemBundle\Object\facade\CacheManager;
 
 /**
  * NavBarLoader class.
@@ -39,6 +40,7 @@ use Symfony\Bundle\FrameworkBundle\Routing\Router;
  */
 class NavBarLoader
 {
+
     /**
      * BUNDLE_PATH
      * 
@@ -49,7 +51,7 @@ class NavBarLoader
      * @var string
      */
     const BUNDLE_PATH = "/Resources/config/navbar.yml";
-    
+
     /**
      * DEFAULT_POSITION
      * 
@@ -59,7 +61,7 @@ class NavBarLoader
      * @var integer
      */
     const DEFAULT_POSITION = 1;
-    
+
     /**
      * Bundles
      * 
@@ -70,6 +72,7 @@ class NavBarLoader
      * @var BundleCollection
      */
     protected $bundles;
+
     /**
      * Logger
      * 
@@ -80,7 +83,7 @@ class NavBarLoader
      * @var Logger
      */
     protected $logger;
-    
+
     /**
      * Base path
      * 
@@ -92,7 +95,7 @@ class NavBarLoader
      * @var string
      */
     protected $basePath;
-    
+
     /**
      * Default position
      * 
@@ -102,7 +105,38 @@ class NavBarLoader
      * @var integer
      */
     protected $defaultPosition;
+
+    /**
+     * Cache manager
+     * 
+     * The application cache
+     * manager to cache the
+     * builded navbar
+     * 
+     * @var CacheManager
+     */
+    protected $cacheManager;
     
+    /**
+     * Cache enabled
+     * 
+     * This variable indicate
+     * that the cache is
+     * enabled
+     * 
+     * @var boolean
+     */
+    protected $cacheEnabled;
+    
+    /**
+     * Cache id
+     * 
+     * The cache id
+     * 
+     * @var string
+     */
+    protected $cacheId;
+
     /**
      * Set arguments
      * 
@@ -113,7 +147,8 @@ class NavBarLoader
      * @param Logger          $logger - the application logger
      * @param array           $config - the bundle configuration
      */
-    public function setArguments(KernelInterface $kernel, Logger $logger, $config){
+    public function setArguments(KernelInterface $kernel, Logger $logger, $config)
+    {
         $this->logger = $logger;
         $this->bundles = new BundleCollection();
         
@@ -128,10 +163,42 @@ class NavBarLoader
         } else {
             $this->defaultPosition = self::DEFAULT_POSITION;
         }
-
+        
+        if ($config['cache'] !== null && is_array($config['cache'])) {
+            if ($config['cache']['enable'] !== null ) {
+                $this->cacheEnabled = boolval($config['cache']['enable']);
+            } else {
+                $this->cacheEnabled = true;
+            }
+            if ($config['cache']['id'] !== null ) {
+                $this->cacheId = $config['cache']['id'];
+            } else {
+                $this->cacheId = "navbar_bundle";
+            }
+        } else {
+            $this->cacheEnabled = "navbar_bundle";
+        }
+        
         $this->storeBundles($kernel);
     }
-    
+
+    /**
+     * Set cache manager
+     * 
+     * Set the cache
+     * manager
+     * 
+     * @param CacheManager $cacheManager - the cache manager
+     * 
+     * @return NavBarLoader - the current instance
+     */
+    public function setCacheManager(CacheManager $cacheManager)
+    {
+        $this->cacheManager = $cacheManager;
+        
+        return $this;
+    }
+
     /**
      * Store bundles
      * 
@@ -144,21 +211,22 @@ class NavBarLoader
      * 
      * @return NavBarLoader - the current instance
      */
-    protected function storeBundles(KernelInterface $kernel){
+    protected function storeBundles(KernelInterface $kernel)
+    {
         foreach ($kernel->getBundles() as $bundle) {
             if ($bundle instanceof Bundle) {
-                $file = $bundle->getPath().$this->basePath;
+                $file = $bundle->getPath() . $this->basePath;
                 if (is_file($file) && is_readable($file)) {
                     $this->bundles->add($bundle);
-                } else if(is_file($file) && !is_readable($file)) {
-                    $this->logger->warning("File ".$file." is not readable");
+                } else if (is_file($file) && ! is_readable($file)) {
+                    $this->logger->warning("File " . $file . " is not readable");
                 }
             }
         }
         
         return $this;
     }
-    
+
     /**
      * Build navbar
      * 
@@ -171,24 +239,41 @@ class NavBarLoader
      * 
      * @return NavBar - the builded navbar
      */
-    public function buildNavbar(Router $router){
-        
-        $bundlesNames = $this->bundles->getNames();
-        $config = array();
-        
-        foreach ($bundlesNames as $name) {
-            $bundle = $this->bundles->get($name);
+    public function buildNavbar(Router $router)
+    {
+        $closure = function ($router, $serialize = true){
+            $bundlesNames = $this->bundles->getNames();
+            $config = array();
             
-            $configFilePath = $bundle->getPath().$this->basePath;
-            $yaml = new Parser();
+            foreach ($bundlesNames as $name) {
+                $bundle = $this->bundles->get($name);
+                
+                $configFilePath = $bundle->getPath() . $this->basePath;
+                $yaml = new Parser();
+                
+                $navbarConfig = $yaml->parse(file_get_contents($configFilePath));
+                
+                if (is_array($navbarConfig)) {
+                    $config = array_merge($config, $navbarConfig["navbar"]);
+                }
+            }
             
-            $navbarConfig = $yaml->parse(file_get_contents($configFilePath));
-            $config = array_merge($config, $navbarConfig["navbar"]);
+            $navBar = new NavBar();
+            $navBar->parseArray($config, $router, $this->defaultPosition);
+            
+            if ($serialize) {
+                return serialize($navBar);
+            } else {
+                return $navBar;
+            }
+        };
+
+        if ($this->cacheEnabled) {
+            $navbar = unserialize($this->cacheManager->process($this->cacheId."@navbar", $closure, $router, true));
+        } else {
+            $navbar = $closure($router, false);
         }
         
-        $navBar = new NavBar();
-        $navBar->parseArray($config, $router, $this->defaultPosition);
-        return $navBar;
+        return $navbar;
     }
-    
 }

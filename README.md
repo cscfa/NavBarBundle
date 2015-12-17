@@ -1,5 +1,5 @@
 # NavBarBundle
-### Version: 1.0.4-dev
+### Version: 1.0.5-dev
 
 The NavBarBundle allow to create a navbar from navbar.yml files placed into the Resources/config directory.
 
@@ -79,3 +79,14 @@ cscfa_nav_bar:
 The 'template' parameter define the root template of the navbar. The template receive the navbar element into the 'element' variable.
 
 The 'child_template' parameter define the rendered template for each elements of the navbar. This template receive a child into 'element' variable and the navbar nesting level into 'nestedLevel' variable.
+
+#####Use cache
+
+By default, the navbar loader will use cache to store the builded navbar. Configure with the following in 'app/config/config.yml' :
+
+```
+cscfa_nav_bar:
+    cache:
+		enable: true|false
+		id:		'the_cache_id'
+```

@@ -1,6 +1,10 @@
 #CHANGELOG for 1.0.*
 #===================
 
+### 1.0.5 (2015-12-17)
+ * fix empty navbar file bug
+ * implement cscfa/cache-system-bundle usage to generate navbar
+
 ### 1.0.4 (2015-12-16)
  * introduce element position
 

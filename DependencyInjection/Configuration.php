@@ -55,6 +55,14 @@ class Configuration implements ConfigurationInterface
                 ->end()
                 ->children()
                 ->scalarNode('default_position')->defaultNull()->end()
+                ->end()
+                ->children()
+                ->arrayNode('cache')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->booleanNode('enable')->defaultTrue()->cannotBeEmpty()->end()
+                        ->scalarNode('id')->defaultValue('navbar_bundle')->cannotBeEmpty()->end()
+                    ->end()
                 ->end();
         
         return $treeBuilder;

@@ -1,13 +1,13 @@
 {
 	"name" : "cscfa/navbar-bundle",
 	"description" : "The NavBarBundle is a symfony2 navbar manager that use a Resources/config/navbar.yml file to manage navbar display",
-	"version" : "1.0.4-dev",
+	"version" : "1.0.5-dev",
 	"type" : "library",
 	"keywords" : [
 		"cscfa",
 		"navbar"
 	],
-	"time" : "2015-12-14",
+	"time" : "2015-12-17",
 	"license" : "MIT",
 	"authors" : [{
 			"name" : "Matthieu Vallance",
@@ -18,7 +18,8 @@
 	],
 	"require" : {
 		"php" : ">=5.3.9",
-		"symfony/framework-bundle" : "~2.1"
+		"symfony/framework-bundle" : "~2.1",
+		"cscfa/cache-system-bundle" : "dev-master"
 	},
 	"autoload" : {
 		"psr-4" : {
